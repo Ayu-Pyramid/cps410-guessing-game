@@ -1,6 +1,6 @@
 import random
 import unittest
-from guessing_game import GuessingGame, InvalidGuessError, State
+from guessing_game import GuessingGame, InvalidGuessError, State, play
 
 
 class TestSecret(unittest.TestCase):
@@ -77,6 +77,31 @@ class TestStateAndAttempts(unittest.TestCase):
         g.guess(7)
         with self.assertRaises(RuntimeError):
             g.guess(7)
+
+
+class TestPlayLoop(unittest.TestCase):
+    """UI tests with scripted input instead of a keyboard."""
+
+    def run_play(self, inputs):
+        feed, out = iter(inputs), []
+        game = play(lambda _: next(feed), out.append, rng=random.Random(1))
+        return game, out
+
+    def test_quit(self):
+        game, out = self.run_play(["q"])
+        self.assertIsNone(game)
+        self.assertIn("Goodbye!", out)
+
+    def test_invalid_input_reprompts(self):
+        # abc = non-numeric, 4 = even; then quit
+        _, out = self.run_play(["abc", "4", "q"])
+        self.assertEqual(sum(m.startswith("Invalid") for m in out), 2)
+
+    def test_win_reports_attempts(self):
+        secret = GuessingGame(rng=random.Random(1))._secret
+        game, out = self.run_play([str(secret)])
+        self.assertEqual(game.attempts, 1)
+        self.assertIn("You won in 1 attempts.", out)
 
 
 if __name__ == "__main__":
