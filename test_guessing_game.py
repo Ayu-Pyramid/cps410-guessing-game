@@ -1,6 +1,6 @@
 import random
 import unittest
-from guessing_game import GuessingGame, InvalidGuessError
+from guessing_game import GuessingGame, InvalidGuessError, State
 
 
 class TestSecret(unittest.TestCase):
@@ -42,6 +42,41 @@ class TestGuessResults(unittest.TestCase):
 
     def test_correct(self):
         self.assertEqual(self.g.guess(501), "correct")
+
+
+class TestStateAndAttempts(unittest.TestCase):
+    def test_initial_state(self):
+        g = GuessingGame(secret=7)
+        self.assertEqual((g.state, g.attempts), (State.READY, 0))
+
+    def test_playing_after_wrong_guess(self):
+        g = GuessingGame(secret=7)
+        g.guess(1)
+        self.assertEqual(g.state, State.PLAYING)
+
+    def test_won_after_correct_guess(self):
+        g = GuessingGame(secret=7)
+        g.guess(7)
+        self.assertEqual(g.state, State.WON)
+
+    def test_invalid_guess_not_counted(self):
+        g = GuessingGame(secret=7)
+        with self.assertRaises(InvalidGuessError):
+            g.guess(4)
+        self.assertEqual(g.attempts, 0)
+
+    def test_attempts_counted(self):
+        g = GuessingGame(secret=7)
+        g.guess(1)
+        g.guess(9)
+        g.guess(7)
+        self.assertEqual(g.attempts, 3)
+
+    def test_no_guess_after_win(self):
+        g = GuessingGame(secret=7)
+        g.guess(7)
+        with self.assertRaises(RuntimeError):
+            g.guess(7)
 
 
 if __name__ == "__main__":
