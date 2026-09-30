@@ -26,4 +26,10 @@ class GuessingGame:
             raise InvalidGuessError("Guess must be odd.")
 
     def guess(self, value):
+        """Check a guess; return 'too low', 'too high' or 'correct'."""
         self._validate(value)
+        if value < self._secret:
+            return "too low"
+        if value > self._secret:
+            return "too high"
+        return "correct"
