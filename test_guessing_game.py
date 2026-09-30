@@ -30,5 +30,19 @@ class TestGuessValidation(unittest.TestCase):
                 self.g.guess(bad)
 
 
+class TestGuessResults(unittest.TestCase):
+    def setUp(self):
+        self.g = GuessingGame(secret=501)
+
+    def test_too_low(self):
+        self.assertEqual(self.g.guess(101), "too low")
+
+    def test_too_high(self):
+        self.assertEqual(self.g.guess(999), "too high")
+
+    def test_correct(self):
+        self.assertEqual(self.g.guess(501), "correct")
+
+
 if __name__ == "__main__":
     unittest.main()
