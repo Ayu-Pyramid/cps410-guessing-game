@@ -24,7 +24,7 @@ class GuessingGame:
     """One round of the game: the player guesses a hidden odd integer."""
 
     MIN, MAX = 1, 1000
-               self._validate(secret)  # the secret follows the same rules as a guess
+
     def __init__(self, secret=None, rng=None):
         """Create a round.
 
@@ -35,6 +35,7 @@ class GuessingGame:
         if secret is None:
             # Stepping by 2 from 1 yields only odd numbers: 1, 3, ..., 999.
             secret = rng.randrange(self.MIN, self.MAX + 1, 2)
+        self._validate(secret)  # the secret follows the same rules as a guess
         self._secret = secret
         self.attempts = 0
         self.state = State.READY
